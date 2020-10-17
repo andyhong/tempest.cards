@@ -1,9 +1,17 @@
-import fetch from 'isomorphic-unfetch'
+import { connectToDatabase } from './db'
 
 const getCards = async () => {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/cards`)
-  const json = await response.json()
-  return json
+  const { db } = await connectToDatabase()
+  const data = await db.collection("cards").find().toArray()
+  const cards = data.map((card) => {
+    return {
+      name: card.name,
+      release_date: card.release_date,
+      category: card.category
+    }
+  })
+  console.log(cards)
+  return cards
 }
 
 export default getCards
