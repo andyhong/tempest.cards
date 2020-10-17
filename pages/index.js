@@ -1,11 +1,10 @@
 import { useState } from 'react'
 import { Box, Heading } from '@chakra-ui/core'
+
 import Table from '../components/Table'
-import fetch from 'isomorphic-unfetch'
-
-
 import CategoryFilter from '../components/CategoryFilter'
 import TrackingStat from '../components/TrackingStat'
+import getCards from '../utils/cards'
 
 const Home = ({ cards }) => {
 
@@ -82,8 +81,7 @@ const Home = ({ cards }) => {
 }
 
 export async function getStaticProps(context) {
-  const data = await fetch(`${process.env.VERCEL_URL}/api/cards`)
-  const cards = await data.json()
+  const cards = await getCards()
   return {
     props: {
       cards,
