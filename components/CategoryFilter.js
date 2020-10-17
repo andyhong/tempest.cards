@@ -9,7 +9,7 @@ const CategoryFilter = (props) => {
   return (
     <Box
       px={6}
-      py={6}
+      py={4}
       display="flex"
       flexDirection="column"
       backgroundColor="white"
@@ -17,9 +17,9 @@ const CategoryFilter = (props) => {
       backgroundColor="white"
       boxShadow="lg"
       overflow="hidden"
-      my={6}
-      mx={2}
       justifyContent="center"
+      mx={2}
+      my={[4, 4, 0]}
     >
       <Text
         mb={1}
@@ -32,7 +32,7 @@ const CategoryFilter = (props) => {
       </Text>
       <CheckboxGroup
         isInline
-        spacing={6}
+        spacing={[4, 4, 6]}
         variantColor="teal"
         defaultValue={[]}
         onChange={updateFilter}

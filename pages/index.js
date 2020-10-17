@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Box, Heading } from '@chakra-ui/core'
+import { Box, Heading, Flex } from '@chakra-ui/core'
 
 import Table from '../components/Table'
 import CategoryFilter from '../components/CategoryFilter'
@@ -38,20 +38,21 @@ const Home = ({ cards }) => {
 
   const columns = Object.keys(categories).sort()
 
-  function search(rows) {
+  const search = (rows) => {
     return selectedCategories.length === 0
       ? rows
       : rows.filter(row => selectedCategories.includes(row.category))
   }
 
-  function updateFilter(e) {
+  const updateFilter = (e) => {
     setSelectedCategories(e)
   }
 
   return (
       <Box
         maxWidth="960px"
-        py="3rem"
+        px={4}
+        py={12}
         display="flex"
         flexDirection="column"
         mx="auto"
@@ -65,17 +66,20 @@ const Home = ({ cards }) => {
         >
           Card Release Calendar
         </Heading>
-        <Box
-          display="flex">
+        <Flex
+          direction={["column", "column", "row"]}
+          my={[2, 4]}
+        >
           <CategoryFilter
             categories={categories}
             columns={columns}
             onChange={updateFilter} />
           <TrackingStat cards={formattedCards.length}/>
-        </Box>
+        </Flex>
         <Table
           data={search(formattedCards)}
-          categories={selectedCategories} />
+          categories={selectedCategories}
+        />
       </Box>
   )
 }
@@ -86,7 +90,7 @@ export async function getStaticProps(context) {
     props: {
       cards,
     },
-    revalidate: 1
+    revalidate: 3600,
   }
 }
 

@@ -3,15 +3,14 @@ import { Stat, StatLabel, StatNumber, StatHelpText } from '@chakra-ui/core'
 const TrackingStat = ({ cards }) => {
   return (
     <Stat
-      px={6}
-      py={4}
+      px={4}
+      py={2}
       backgroundColor="white"
       borderRadius="1.5rem"
       boxShadow="lg"
       overflow="hidden"
-      mx={2}
-      my={6}
       textAlign="center"
+      mx={2}
       >
       <StatLabel
         mt={1}

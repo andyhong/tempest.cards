@@ -10,7 +10,6 @@ const getCards = async () => {
       category: card.category
     }
   })
-  console.log(cards)
   return cards
 }
 
