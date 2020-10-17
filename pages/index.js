@@ -82,7 +82,7 @@ const Home = ({ cards }) => {
 }
 
 export async function getStaticProps(context) {
-  const data = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/cards`)
+  const data = await fetch(`${process.env.VERCEL_URL}/api/cards`)
   const cards = await data.json()
   return {
     props: {
