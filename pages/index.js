@@ -1,65 +1,95 @@
-import Head from 'next/head'
-import styles from '../styles/Home.module.css'
+import { useState } from 'react'
+import { Box, Heading } from '@chakra-ui/core'
+import Table from '../components/Table'
+import fetch from 'isomorphic-unfetch'
 
-export default function Home() {
+
+import CategoryFilter from '../components/CategoryFilter'
+import TrackingStat from '../components/TrackingStat'
+
+const Home = ({ cards }) => {
+
+  const [selectedCategories, setSelectedCategories] = useState([])
+
+  const other = ["other_sports", "non_sport"]
+  const categories = {
+    baseball: "⚾",
+    basketball: "🏀",
+    football: "🏈",
+    hockey: "🏒",
+    other: "🃏",
+    gaming: "🎮",
+  }
+
+  const formattedCards = cards
+    .map(card => {
+      return other.includes(card.category)
+        ? { ...card, category: "other" }
+        : { ...card }
+    })
+    .map(card => {
+      return {
+        ...card,
+        name: `${categories[card.category]} ${card.name}`,
+        date: new Date(card.release_date)
+      }
+    })
+    .filter(card => card.date >= Date.now())
+    .sort((a, b) => a.date - b.date)
+
+  const columns = Object.keys(categories).sort()
+
+  function search(rows) {
+    return selectedCategories.length === 0
+      ? rows
+      : rows.filter(row => selectedCategories.includes(row.category))
+  }
+
+  function updateFilter(e) {
+    setSelectedCategories(e)
+  }
+
   return (
-    <div className={styles.container}>
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+      <Box
+        maxWidth="960px"
+        py="3rem"
+        display="flex"
+        flexDirection="column"
+        mx="auto"
+      >
+        <Heading
+          as="h1"
+          size="2xl"
+          textAlign="center"
+          fontWeight="900"
+          letterSpacing="tighter"
         >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
-    </div>
+          Card Release Calendar
+        </Heading>
+        <Box
+          display="flex">
+          <CategoryFilter
+            categories={categories}
+            columns={columns}
+            onChange={updateFilter} />
+          <TrackingStat cards={formattedCards.length}/>
+        </Box>
+        <Table
+          data={search(formattedCards)}
+          categories={selectedCategories} />
+      </Box>
   )
 }
+
+export async function getStaticProps(context) {
+  const data = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/cards`)
+  const cards = await data.json()
+  return {
+    props: {
+      cards,
+    },
+    revalidate: 1
+  }
+}
+
+export default Home
