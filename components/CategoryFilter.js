@@ -2,7 +2,16 @@ import { Box, Text, CheckboxGroup, Checkbox } from '@chakra-ui/core'
 
 const CategoryFilter = (props) => {
 
-  function updateFilter(e) {
+  const categories = {
+    baseball: "⚾",
+    basketball: "🏀",
+    football: "🏈",
+    hockey: "🏒",
+    other: "🃏",
+    gaming: "🎮",
+  }
+
+  const updateFilter = (e) => {
     props.onChange(e)
   }
 
@@ -14,7 +23,6 @@ const CategoryFilter = (props) => {
       flexDirection="column"
       backgroundColor="white"
       borderRadius="1.5rem"
-      backgroundColor="white"
       boxShadow="lg"
       overflow="hidden"
       justifyContent="center"
@@ -35,6 +43,7 @@ const CategoryFilter = (props) => {
         spacing={[4, 4, 6]}
         variantColor="teal"
         defaultValue={[]}
+        value={props.selectedCategories}
         onChange={updateFilter}
       >
         {props.columns && props.columns.map(column => (
@@ -42,7 +51,7 @@ const CategoryFilter = (props) => {
             key={column}
             value={column}
           >
-            {props.categories[column]}
+            {categories[column]}
           </Checkbox>
         ))}
       </CheckboxGroup>

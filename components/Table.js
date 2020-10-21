@@ -1,6 +1,6 @@
 import { useTable } from 'react-table'
 import { useMemo } from 'react'
-import { Box, Text } from '@chakra-ui/core'
+import { Box, Text, Flex } from '@chakra-ui/core'
 
 import styles from '../styles/Table.module.css'
 
@@ -9,34 +9,10 @@ const Table = (props) => {
   const columns = useMemo(
     () => [
       {
-        Header: () => (
-          <Text
-            textAlign="left"
-            px={6}
-            py={4}
-            color="gray.500"
-            fontWeight="medium"
-            letterSpacing="tighter"
-          >
-            SET NAME
-          </Text>
-        ),
         accessor: "name",
         Cell: row => <Text letterSpacing="tight">{row.value}</Text>
       },
       {
-        Header: () => (
-          <Text
-            px={6}
-            py={4}
-            color="gray.500"
-            fontWeight="medium"
-            letterSpacing="tighter"
-            textAlign="center"
-          >
-            RELEASE DATE
-          </Text>
-        ),
         accessor: "release_date",
         Cell: row => <Text textAlign="center" letterSpacing="tight">{row.value}</Text>
       },
@@ -46,7 +22,7 @@ const Table = (props) => {
 
   const data = useMemo(
     () => props.data,
-    [props.categories]
+    [props.categories, props.query]
   )
 
   const tableInstance = useTable({ columns, data })
@@ -68,10 +44,30 @@ const Table = (props) => {
       boxShadow="lg"
       overflow="hidden"
     >
-      <table {...getTableProps()}>
+      <Flex
+        align="center"
+        letterSpacing="tighter"
+        fontSize="sm"
+        fontWeight="medium"
+        color="gray.500"
+        backgroundColor="gray.100"
+      >
+        <Text flexBasis="75%" px={6} py={4}>
+          SET NAME
+        </Text>
+        <Text
+          flex="1"
+          textAlign="right"
+          px={6}
+          py={4}
+        >
+          RELEASE DATE
+        </Text>
+      </Flex>
+      <table className={styles.table} {...getTableProps()}>
         <thead>
           {headerGroups.map(headerGroup => (
-            <tr className={styles.tableHead} {...headerGroup.getHeaderGroupProps()}>
+            <tr style={{ display: "none" }} {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map(column => (
                 <th {...column.getHeaderProps()}>
                   {column.render("Header")}

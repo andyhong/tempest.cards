@@ -1,42 +1,17 @@
 import { useState } from 'react'
-import { Box, Heading, Flex } from '@chakra-ui/core'
+import { Box, Heading, Flex, Link } from '@chakra-ui/core'
 
 import Table from '../components/Table'
 import CategoryFilter from '../components/CategoryFilter'
 import TrackingStat from '../components/TrackingStat'
 import getCards from '../utils/cards'
+import SearchBar from '../components/SearchBar'
 
-const Home = ({ cards }) => {
+const Home = ({ data, columns }) => {
 
   const [selectedCategories, setSelectedCategories] = useState([])
-
-  const other = ["other_sports", "non_sport"]
-  const categories = {
-    baseball: "⚾",
-    basketball: "🏀",
-    football: "🏈",
-    hockey: "🏒",
-    other: "🃏",
-    gaming: "🎮",
-  }
-
-  const formattedCards = cards
-    .map(card => {
-      return other.includes(card.category)
-        ? { ...card, category: "other" }
-        : { ...card }
-    })
-    .map(card => {
-      return {
-        ...card,
-        name: `${categories[card.category]} ${card.name}`,
-        date: new Date(card.release_date)
-      }
-    })
-    .filter(card => card.date >= Date.now())
-    .sort((a, b) => a.date - b.date)
-
-  const columns = Object.keys(categories).sort()
+  const [ cards, setCards ] = useState(data)
+  const [ query, setQuery ] = useState("")
 
   const search = (rows) => {
     return selectedCategories.length === 0
@@ -44,11 +19,27 @@ const Home = ({ cards }) => {
       : rows.filter(row => selectedCategories.includes(row.category))
   }
 
+  const filter = (rows) => {
+    return query.length === 0
+      ? rows
+      : rows.filter((row) => row.name.toLowerCase().includes(query.toLowerCase()))
+  }
+
+  const resetFilters = () => {
+    setSelectedCategories([])
+    setQuery("")
+  }
+
   const updateFilter = (e) => {
     setSelectedCategories(e)
   }
 
+  const updateQuery = (e) => {
+    setQuery(e.target.value)
+  }
+
   return (
+    <>
       <Box
         maxWidth="960px"
         px={4}
@@ -63,32 +54,58 @@ const Home = ({ cards }) => {
           textAlign="center"
           fontWeight="900"
           letterSpacing="tighter"
+          my={4}
         >
           Card Release Calendar
         </Heading>
+        <SearchBar
+          query={query}
+          onChange={updateQuery}
+          onClick={resetFilters} />
         <Flex
           direction={["column", "column", "row"]}
-          my={[2, 4]}
+          my={[0, 0, 4]}
+          w="full"
         >
           <CategoryFilter
-            categories={categories}
+            selectedCategories={selectedCategories}
             columns={columns}
             onChange={updateFilter} />
-          <TrackingStat cards={formattedCards.length}/>
+          <TrackingStat cards={cards.length}/>
         </Flex>
         <Table
-          data={search(formattedCards)}
+          data={search(filter(cards))}
           categories={selectedCategories}
+          query={query}
         />
       </Box>
+      <Flex
+        as="footer"
+        borderTop="1px solid"
+        borderTopColor="gray.200"
+        height="6rem"
+        direction="column"
+        justify="center"
+        textAlign="center"
+        fontWeight="medium"
+      >
+        <Link
+          href="https://github.com/andyhong"
+          isExternal
+        >
+          —ah
+        </Link>
+      </Flex>
+    </>
   )
 }
 
-export async function getStaticProps(context) {
-  const cards = await getCards()
+export async function getStaticProps() {
+  const { cards, columns } = await getCards()
   return {
     props: {
-      cards,
+      data: cards,
+      columns
     },
     revalidate: 3600,
   }
