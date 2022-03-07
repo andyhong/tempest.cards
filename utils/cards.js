@@ -26,7 +26,7 @@ const getCards = async () => {
         date: new Date(card.release_date)
       }
     })
-    .filter(card => card.date >= Date.now())
+    // .filter(card => card.date >= Date.now())
     .sort((a, b) => a.date - b.date)
     .map((card) => {
       return {
